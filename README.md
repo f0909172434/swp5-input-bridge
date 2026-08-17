@@ -1,14 +1,14 @@
 # swp5-input-bridge
 
-`swp5-input-bridge` is a conservative Windows automation bridge for **Scientific WorkPlace 5.5**. It enters structured mathematics as native SWP objects and can now invoke selected SWP Compute, Plot, and Typeset commands through the real application UI.
+`swp5-input-bridge` is a conservative Windows automation bridge for **Scientific WorkPlace 5.5**. It enters structured mathematics as native SWP objects and can invoke selected SWP Compute, Plot, and Typeset commands through the real application UI.
 
 It exists because pasting LaTeX-like text into SWP 5.5 produces literal source such as `\frac` and `\rho`. The bridge parses a restricted notation and replays the equivalent SWP 5.5 actions instead of editing the generated `.tex` file behind SWP's back.
 
 ## Status
 
-Experimental live driver. Parser and dry-run planning are testable on Python 3.10 and 3.12. Live entry and application commands require Windows, SWP 5.5, and an English-menu installation for the current Compute/Plot/Typeset menu paths.
+Experimental live driver. Parser and dry-run planning are testable on Python 3.10 and 3.12. Live entry and application commands require Windows and SWP 5.5.
 
-The project still does **not** save, close, overwrite, or rename SWP files. File management remains manual so a failed automation run cannot destroy the working document.
+The project does **not** save, close, overwrite, or rename SWP files. File management remains manual so a failed automation run cannot destroy the working document.
 
 ## Install
 
@@ -47,7 +47,7 @@ A `.swpmd` file is plain UTF-8 text. Use `$ ... $` for inline mathematics and `$
 Lemma. Assume that $f(0)>0$. Then
 
 $$
-\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0.
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0
 $$
 ```
 
@@ -60,7 +60,7 @@ swp5-input write --file examples/basic.swpmd --yes
 
 ## SWP application directives
 
-A standalone directive line is not typed into the document. It is converted into a semantic application action. When it immediately follows a math block, whitespace is delayed until after the action so the SWP insertion point is still to the right of the expression when Compute or Plot is invoked.
+A standalone directive line is not typed into the document. It becomes a semantic SWP application action. When a Compute or Plot directive immediately follows a math block, the bridge moves the caret one position left into the mathematical object before invoking the command. This follows SWP 5.5's automatic-selection behavior and avoids the failure mode where the caret sits outside a display.
 
 ```text
 $$
@@ -85,22 +85,31 @@ Supported directives:
 - `[[swp:typeset:compile-pdf]]`
 - `[[swp:typeset:preview-pdf]]`
 
-The same application actions can be invoked directly. For example, after manually saving the current SWP document:
+For 2D plotting the driver first invokes the native menu path `Compute -> Plot 2D -> Rectangular`, with spelling fallbacks for installations that expose `Plot2D` as one word.
+
+## Native Compute/Plot smoke test
+
+Before generating a long document, a short live smoke test is available:
 
 ```powershell
-swp5-input command typeset:compile-pdf --yes
+py -m swp5_input.cli write --file examples/swp-native-compute-plot-smoke.swpmd --yes
 ```
 
-MacKichan's SWP 5.5 documentation describes the same UI workflow: place the insertion point to the right of an expression, then use Compute > Evaluate / Evaluate Numerically / Plot 2D / Plot3D. The driver uses `pywinauto` menu selection rather than screen coordinates.
+The expected visible behavior in SWP is:
+
+1. `2+3` receives a native computed result
+2. the numerical trigonometric expression receives a native numerical result
+3. `x tan x` is followed by an SWP-generated rectangular 2D plot
+
+If the source expressions appear but the result or plot does not, the native SWP command path has not executed successfully and the full report should not be generated yet.
 
 ## HW-2 progress report
 
-`examples/hw2-progress-report.swpmd` is a self-contained local bifurcation progress report. It includes the problem and branch formulation, the three-case left-end theorem and proofs, a numerical SWP computation, and a live 2D plot action.
+`examples/hw2-progress-report.swpmd` is a self-contained local bifurcation progress report. It contains the problem and branch formulation, the three-case left-end theorem and proofs, a native SWP numerical computation, and a native SWP rectangular 2D plot.
 
-After pulling the latest repository and opening a blank SWP document:
+After the native smoke test succeeds, open a blank SWP document and run:
 
 ```powershell
-py -m swp5_input.cli plan --file examples/hw2-progress-report.swpmd
 py -m swp5_input.cli write --file examples/hw2-progress-report.swpmd --yes
 ```
 

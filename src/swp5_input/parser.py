@@ -110,6 +110,8 @@ class MathParser:
                 raise ParseError("Trailing backslash")
             literal = self.source[self.pos]
             self.pos += 1
+            if literal in {",", ";", "!", " "}:
+                return []
             return [Action(Kind.TYPE, literal)]
 
         if name in {"left", "right"}:

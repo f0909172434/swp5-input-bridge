@@ -6,13 +6,14 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .actions import Action, Kind
 from .driver import DriverError, SWPDriver
 from .parser import ParseError, parse_document, parse_math
 
 
 def _actions_from_args(args):
     if args.expr is not None:
-        return parse_math(args.expr)
+        return [Action(Kind.MATH_START), *parse_math(args.expr), Action(Kind.MATH_END)]
     path = Path(args.file)
     return parse_document(path.read_text(encoding="utf-8"))
 

@@ -38,6 +38,7 @@ def test_fraction_and_integral():
     assert Kind.INTEGRAL in kinds
     assert Kind.FRACTION in kinds
     assert Kind.NEXT_FIELD in kinds
+    assert not any(a.value == "," for a in actions)
 
 
 def test_document_display_blocks():

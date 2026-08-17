@@ -4,6 +4,18 @@ from dataclasses import dataclass
 from enum import Enum
 
 
+SUPPORTED_SWP_COMMANDS = (
+    "compute:evaluate",
+    "compute:evaluate-numerically",
+    "compute:simplify",
+    "compute:solve-exact",
+    "plot:2d",
+    "plot:3d",
+    "typeset:compile-pdf",
+    "typeset:preview-pdf",
+)
+
+
 class Kind(str, Enum):
     TEXT = "text"
     TYPE = "type"
@@ -20,6 +32,7 @@ class Kind(str, Enum):
     NEXT_FIELD = "next_field"
     EXIT_TEMPLATE = "exit_template"
     NEWLINE = "newline"
+    SWP_COMMAND = "swp_command"
 
 
 @dataclass(frozen=True)

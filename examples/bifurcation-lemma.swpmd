@@ -1,0 +1,11 @@
+We first prove that
+
+$$
+0<\liminf_{\rho\to0^+}K_\rho(m_\rho)\le\limsup_{\rho\to0^+}K_\rho(m_\rho)<\infty.
+$$
+
+Let
+
+$$
+F(s)=\int_0^s f(t)\,dt.
+$$

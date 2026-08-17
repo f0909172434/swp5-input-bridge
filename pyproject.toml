@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swp5-input-bridge"
+version = "0.1.0"
+description = "Keyboard-first automation bridge for entering structured mathematics into Scientific WorkPlace 5.5"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Chih-Kai Wang"}]
+dependencies = [
+  "pywinauto>=0.6.9; platform_system == 'Windows'",
+  "pyperclip>=1.9.0; platform_system == 'Windows'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+swp5-input = "swp5_input.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

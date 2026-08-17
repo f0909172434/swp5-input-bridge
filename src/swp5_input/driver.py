@@ -97,17 +97,24 @@ class SWPDriver:
         """Enter an SWP 5.5 TeX-named symbol while holding Ctrl continuously.
 
         SWP 5.5 interprets Ctrl+name as one TeX command only when Ctrl remains
-        depressed for the whole command name. pywinauto's ``^(name)`` syntax
-        sends a sequence of separate Ctrl+letter shortcuts, which collides with
-        SWP shortcuts such as Ctrl+L (subscript) and Ctrl+R (radical).
+        depressed for the whole command name. Capital TeX names such as
+        ``Lambda`` additionally require the initial letter to be sent with
+        Shift held; otherwise SWP resolves them as the lowercase command.
         """
         if not name.isalpha():
             raise DriverError(f"Unsafe TeX macro name: {name!r}")
         send = self._keyboard.send_keys
-        # Use virtual-key events rather than VK_PACKET while Ctrl is held so SWP
-        # sees the same key chords as a physical keyboard.
         send("{VK_CONTROL down}", vk_packet=False)
         try:
-            send(name, vk_packet=False)
+            if name[0].isupper():
+                send("{VK_SHIFT down}", vk_packet=False)
+                try:
+                    send(name[0].lower(), vk_packet=False)
+                finally:
+                    send("{VK_SHIFT up}", vk_packet=False)
+                if len(name) > 1:
+                    send(name[1:], vk_packet=False)
+            else:
+                send(name, vk_packet=False)
         finally:
             send("{VK_CONTROL up}", vk_packet=False)

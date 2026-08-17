@@ -1,0 +1,22 @@
+Scientific WorkPlace native computation smoke test
+
+The next expression must be evaluated by the built-in Compute command.
+
+$$
+2+3
+$$
+[[swp:compute:evaluate]]
+
+The next expression must be evaluated numerically by the built-in Compute command.
+
+$$
+0.860333589\tan(0.860333589)
+$$
+[[swp:compute:evaluate-numerically]]
+
+The next expression must produce a native two-dimensional rectangular plot.
+
+$$
+x\tan x
+$$
+[[swp:plot:2d]]

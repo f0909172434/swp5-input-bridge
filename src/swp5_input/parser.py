@@ -199,11 +199,11 @@ def parse_document(source: str) -> list[Action]:
     """Parse plain text, native SWP math blocks, and semantic SWP directives.
 
     ``$ ... $`` marks inline mathematics and ``$$ ... $$`` marks display
-    mathematics. A directive such as ``[[swp:plot:2d]]`` is not typed into the
-    document; it becomes a semantic application command. If a directive follows
-    a math block separated only by whitespace, that whitespace is replayed after
-    the command so SWP still sees the insertion point immediately to the right
-    of the expression when the Compute/Plot command is invoked.
+    mathematics. A directive such as ``[[swp:plot:2d]]`` becomes an application
+    command rather than document text. When a Compute or Plot directive follows
+    a math block, the parser first moves the insertion point one position left,
+    into the mathematical object. This follows SWP 5.5's documented automatic
+    selection rule and is more reliable than leaving the caret outside a display.
     """
     out: list[Action] = []
     cursor = 0
@@ -227,7 +227,9 @@ def parse_document(source: str) -> list[Action]:
             end = source.find(_DIRECTIVE_SUFFIX, start + len(_DIRECTIVE_PREFIX))
             if end < 0:
                 raise ParseError("Unclosed [[swp:...]] directive")
-            command = source[start + len(_DIRECTIVE_PREFIX):end]
+            command = source[start + len(_DIRECTIVE_PREFIX):end].strip()
+            if last_was_math_close and (command.startswith("compute:") or command.startswith("plot:")):
+                out.append(Action(Kind.CURSOR_LEFT))
             out.append(parse_swp_command(command))
             if defer_whitespace:
                 out.append(Action(Kind.TEXT, between))

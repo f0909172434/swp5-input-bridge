@@ -180,12 +180,7 @@ class SWPDriver:
         )
 
     def _send_plot_2d_with_interval(self, xmin: float, xmax: float) -> None:
-        """Create a native rectangular plot after setting its x sampling interval.
-
-        SWP 5.5 documents that holding Ctrl while invoking a plot opens Plot
-        Properties before generation. We use that path, set the rectangular plot
-        interval in the native dialog, and then allow SWP/MuPAD to create the plot.
-        """
+        """Create a native rectangular plot after setting its x sampling interval."""
         if self._window is None or self._keyboard is None:
             raise DriverError("Scientific WorkPlace window is not connected")
 
@@ -219,20 +214,8 @@ class SWPDriver:
             pass
 
     def _configure_plot_interval_dialog(self, xmin: float, xmax: float) -> None:
-        try:
-            from pywinauto import Desktop
-        except ImportError as exc:
-            raise DriverError("pywinauto is required for Plot Properties automation") from exc
-
-        desktop = Desktop(backend="uia")
-        plot_spec = desktop.window(title_re=r".*Plot Properties.*")
-        try:
-            plot_spec.wait("visible", timeout=6)
-            plot_dialog = plot_spec.wrapper_object()
-        except Exception as exc:
-            raise DriverError(
-                "Plot Properties did not open. SWP 5.5 requires Ctrl to be held while the plot command is invoked."
-            ) from exc
+        plot_dialog = self._find_plot_properties_dialog(timeout=6)
+        plot_handle = getattr(plot_dialog, "handle", None)
 
         items_tab = self._find_control(plot_dialog, ("items", "plotted"), preferred_types={"TabItem"})
         self._activate_control(items_tab)
@@ -246,7 +229,7 @@ class SWPDriver:
         self._activate_control(interval_button)
         time.sleep(0.15)
 
-        interval_dialog = self._find_interval_dialog(desktop, exclude_handle=getattr(plot_dialog, "handle", None))
+        interval_dialog = self._find_interval_dialog(exclude_handle=plot_handle, timeout=5)
         edits = [control for control in interval_dialog.descendants() if self._control_type(control) == "Edit"]
         numeric = []
         for edit in edits:
@@ -262,36 +245,105 @@ class SWPDriver:
                 + self._control_summary(interval_dialog)
             )
 
-        # Each plotted expression can carry its own interval. Change every
-        # default rectangular pair so a constant comparison curve cannot keep
-        # the plot on SWP's default -5..5 domain.
         for control in lower_boxes:
             self._set_edit(control, self._format_number(xmin))
         for control in upper_boxes:
             self._set_edit(control, self._format_number(xmax))
         self._click_ok(interval_dialog)
 
-        plot_spec.wait("visible", timeout=3)
-        plot_dialog = plot_spec.wrapper_object()
+        plot_dialog = self._find_plot_properties_dialog(timeout=3, preferred_handle=plot_handle)
         self._click_ok(plot_dialog)
 
-    def _find_interval_dialog(self, desktop, exclude_handle=None):
-        deadline = time.time() + 5
+    def _find_plot_properties_dialog(self, timeout: float, preferred_handle=None):
+        return self._find_legacy_dialog(
+            self._is_plot_properties_title,
+            timeout=timeout,
+            preferred_handle=preferred_handle,
+            missing_message=(
+                "Plot Properties is visible in SWP but the automation could not attach to it. "
+                "The dialog is a legacy Win32 window, so discovery must use its native HWND rather than UIA title enumeration."
+            ),
+        )
+
+    def _find_interval_dialog(self, exclude_handle=None, timeout: float = 5):
+        return self._find_legacy_dialog(
+            self._is_interval_dialog_title,
+            timeout=timeout,
+            exclude_handle=exclude_handle,
+            missing_message="Variables, Intervals, and Automation was opened, but its interval dialog was not found",
+        )
+
+    def _find_legacy_dialog(
+        self,
+        title_matcher,
+        *,
+        timeout: float,
+        preferred_handle=None,
+        exclude_handle=None,
+        missing_message: str,
+    ):
+        """Discover old SWP modal dialogs with win32, then re-wrap by HWND for UIA controls.
+
+        SWP 5.5 predates modern UI Automation. On current Windows versions a dialog can be
+        plainly visible and still be absent from Desktop(backend='uia').windows(). Native
+        win32 enumeration reliably sees the HWND; once found, UIA can usually wrap that same
+        handle and expose tab/button/edit controls.
+        """
+        try:
+            from pywinauto import Desktop
+        except ImportError as exc:
+            raise DriverError("pywinauto is required for Plot Properties automation") from exc
+
+        deadline = time.time() + timeout
+        seen_titles: list[str] = []
         while time.time() < deadline:
-            for window in desktop.windows(visible_only=True):
+            win32_desktop = Desktop(backend="win32")
+            matches = []
+            for window in win32_desktop.windows(visible_only=True):
                 try:
                     handle = getattr(window, "handle", None)
                     if exclude_handle is not None and handle == exclude_handle:
                         continue
-                    title = window.window_text().lower()
-                    is_plot_interval = "plot interval" in title or ("interval" in title and "plot" in title)
-                    is_variables_interval = "interval" in title and "variable" in title
-                    if is_plot_interval or is_variables_interval:
-                        return window
+                    title = window.window_text().strip()
+                    if title and title not in seen_titles:
+                        seen_titles.append(title)
+                    if title_matcher(title):
+                        matches.append(window)
                 except Exception:
                     continue
+
+            if preferred_handle is not None:
+                matches.sort(key=lambda w: 0 if getattr(w, "handle", None) == preferred_handle else 1)
+
+            for win32_window in matches:
+                handle = getattr(win32_window, "handle", None)
+                if handle is None:
+                    continue
+                try:
+                    uia_spec = Desktop(backend="uia").window(handle=handle)
+                    uia_spec.wait("visible", timeout=0.5)
+                    return uia_spec.wrapper_object()
+                except Exception:
+                    # Legacy controls may not expose a UIA provider. Returning the native
+                    # wrapper is still better than claiming that the visible dialog is absent.
+                    return win32_window
+
             time.sleep(0.1)
-        raise DriverError("Variables, Intervals, and Automation was opened, but its interval dialog was not found")
+
+        titles = ", ".join(repr(title) for title in seen_titles[-20:])
+        suffix = f" Visible top-level windows: {titles}" if titles else ""
+        raise DriverError(missing_message + suffix)
+
+    @staticmethod
+    def _is_plot_properties_title(title: str) -> bool:
+        return "plot properties" in title.strip().lower()
+
+    @staticmethod
+    def _is_interval_dialog_title(title: str) -> bool:
+        text = title.strip().lower()
+        is_plot_interval = "plot interval" in text or ("interval" in text and "plot" in text)
+        is_variables_interval = "interval" in text and "variable" in text
+        return is_plot_interval or is_variables_interval
 
     @staticmethod
     def _control_type(control) -> str:

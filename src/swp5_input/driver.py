@@ -17,8 +17,18 @@ _COMMAND_MENU_PATHS = {
     "compute:evaluate-numerically": ("Compute->Evaluate Numerically",),
     "compute:simplify": ("Compute->Simplify",),
     "compute:solve-exact": ("Compute->Solve->Exact",),
-    "plot:2d": ("Compute->Plot 2D", "Compute->Plot2D"),
-    "plot:3d": ("Compute->Plot 3D", "Compute->Plot3D"),
+    "plot:2d": (
+        "Compute->Plot 2D->Rectangular",
+        "Compute->Plot2D->Rectangular",
+        "Compute->Plot 2D",
+        "Compute->Plot2D",
+    ),
+    "plot:3d": (
+        "Compute->Plot 3D->Rectangular",
+        "Compute->Plot3D->Rectangular",
+        "Compute->Plot 3D",
+        "Compute->Plot3D",
+    ),
     "typeset:compile-pdf": ("Typeset->Compile PDF",),
     "typeset:preview-pdf": ("Typeset->Preview PDF",),
 }
@@ -93,6 +103,8 @@ class SWPDriver:
             send(p.exit_template)
         elif action.kind == Kind.NEWLINE:
             send("{ENTER}")
+        elif action.kind == Kind.CURSOR_LEFT:
+            send("{LEFT}")
         elif action.kind == Kind.SWP_COMMAND:
             self._send_swp_command(action.value or "")
         else:

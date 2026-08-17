@@ -4,7 +4,7 @@ import os
 import time
 from typing import Iterable
 
-from .actions import Action, Kind
+from .actions import Action, Kind, SUPPORTED_SWP_COMMANDS
 from .profile import SWP55Profile
 
 
@@ -12,10 +12,23 @@ class DriverError(RuntimeError):
     pass
 
 
+_COMMAND_MENU_PATHS = {
+    "compute:evaluate": ("Compute->Evaluate",),
+    "compute:evaluate-numerically": ("Compute->Evaluate Numerically",),
+    "compute:simplify": ("Compute->Simplify",),
+    "compute:solve-exact": ("Compute->Solve->Exact",),
+    "plot:2d": ("Compute->Plot 2D", "Compute->Plot2D"),
+    "plot:3d": ("Compute->Plot 3D", "Compute->Plot3D"),
+    "typeset:compile-pdf": ("Typeset->Compile PDF",),
+    "typeset:preview-pdf": ("Typeset->Preview PDF",),
+}
+
+
 class SWPDriver:
-    def __init__(self, profile: SWP55Profile | None = None, pause: float = 0.03):
+    def __init__(self, profile: SWP55Profile | None = None, pause: float = 0.03, command_pause: float = 0.8):
         self.profile = profile or SWP55Profile()
         self.pause = pause
+        self.command_pause = command_pause
         self._keyboard = None
         self._window = None
 
@@ -45,7 +58,7 @@ class SWPDriver:
             if not self._window.has_focus():
                 raise DriverError("SWP lost focus; aborting before sending more input.")
             self._execute_one(action)
-            time.sleep(self.pause)
+            time.sleep(self.command_pause if action.kind == Kind.SWP_COMMAND else self.pause)
 
     def _execute_one(self, action: Action) -> None:
         assert self._keyboard is not None
@@ -80,6 +93,8 @@ class SWPDriver:
             send(p.exit_template)
         elif action.kind == Kind.NEWLINE:
             send("{ENTER}")
+        elif action.kind == Kind.SWP_COMMAND:
+            self._send_swp_command(action.value or "")
         else:
             raise DriverError(f"Unsupported action kind: {action.kind}")
 
@@ -94,13 +109,6 @@ class SWPDriver:
         self._keyboard.send_keys("^v")
 
     def _send_tex(self, name: str) -> None:
-        """Enter an SWP 5.5 TeX-named symbol while holding Ctrl continuously.
-
-        SWP 5.5 interprets Ctrl+name as one TeX command only when Ctrl remains
-        depressed for the whole command name. Capital TeX names such as
-        ``Lambda`` additionally require the initial letter to be sent with
-        Shift held; otherwise SWP resolves them as the lowercase command.
-        """
         if not name.isalpha():
             raise DriverError(f"Unsafe TeX macro name: {name!r}")
         send = self._keyboard.send_keys
@@ -118,3 +126,23 @@ class SWPDriver:
                 send(name, vk_packet=False)
         finally:
             send("{VK_CONTROL up}", vk_packet=False)
+
+    def _send_swp_command(self, command: str) -> None:
+        if command not in SUPPORTED_SWP_COMMANDS:
+            raise DriverError(f"Unsupported SWP command: {command!r}")
+        if self._window is None:
+            raise DriverError("Scientific WorkPlace window is not connected")
+
+        errors = []
+        for path in _COMMAND_MENU_PATHS[command]:
+            try:
+                self._window.menu_select(path)
+                return
+            except Exception as exc:
+                errors.append(f"{path}: {exc}")
+
+        attempted = "; ".join(errors)
+        raise DriverError(
+            f"Could not invoke SWP command {command!r}. Tried menu paths: {attempted}. "
+            "This usually means the installed SWP menu text differs from the English 5.5 menu."
+        )

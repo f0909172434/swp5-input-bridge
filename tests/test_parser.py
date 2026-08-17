@@ -9,7 +9,7 @@ def sig(actions):
 
 
 def test_limit_expression():
-    actions = parse_math(r"\lim_{\rho\to0^+}K_\rho(m_\rho)=0")
+    actions = parse_math(r"\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0")
     assert sig(actions) == [
         ("tex", "lim"),
         ("subscript", None),
@@ -20,7 +20,7 @@ def test_limit_expression():
         ("type", "+"),
         ("exit_template", None),
         ("exit_template", None),
-        ("type", "K"),
+        ("tex", "Lambda"),
         ("subscript", None),
         ("tex", "rho"),
         ("exit_template", None),
@@ -42,11 +42,19 @@ def test_fraction_and_integral():
 
 
 def test_document_display_blocks():
-    actions = parse_document("Lemma.\n$$K_\\rho=0$$\nDone.")
+    actions = parse_document("Lemma.\n$$\Lambda_\\rho=0$$\nDone.")
     assert actions[0].kind == Kind.TEXT
     assert any(a.kind == Kind.DISPLAY_START for a in actions)
     assert any(a.kind == Kind.DISPLAY_END for a in actions)
     assert actions[-1].kind == Kind.TEXT
+
+
+def test_document_inline_math():
+    actions = parse_document(r"Since $f(0)>0$, we obtain $\Lambda_\rho(m_\rho)>0$.")
+    kinds = [a.kind for a in actions]
+    assert kinds.count(Kind.MATH_START) == 2
+    assert kinds.count(Kind.MATH_END) == 2
+    assert any(a.kind == Kind.TEX and a.value == "Lambda" for a in actions)
 
 
 def test_rejects_unknown_command():

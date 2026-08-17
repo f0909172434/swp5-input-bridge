@@ -169,27 +169,39 @@ def parse_math(source: str) -> list[Action]:
 
 
 def parse_document(source: str) -> list[Action]:
-    """Parse plain text with display-math blocks delimited by $$ ... $$.
+    """Parse plain text with native SWP inline and display math blocks.
 
-    Markdown is intentionally not implemented in v0.1. Text outside display blocks is
-    preserved exactly. Display blocks use the restricted math parser above.
+    ``$ ... $`` marks inline mathematics and ``$$ ... $$`` marks display
+    mathematics. Markdown is otherwise intentionally not implemented. Text
+    outside math blocks is preserved exactly.
     """
     out: list[Action] = []
     cursor = 0
     while cursor < len(source):
-        start = source.find("$$", cursor)
+        start = source.find("$", cursor)
         if start < 0:
             if cursor < len(source):
                 out.append(Action(Kind.TEXT, source[cursor:]))
             break
         if start > cursor:
             out.append(Action(Kind.TEXT, source[cursor:start]))
-        end = source.find("$$", start + 2)
-        if end < 0:
-            raise ParseError("Unclosed $$ display block")
-        expr = source[start + 2:end].strip()
-        out.append(Action(Kind.DISPLAY_START))
-        out.extend(parse_math(expr))
-        out.append(Action(Kind.DISPLAY_END))
-        cursor = end + 2
+
+        if source.startswith("$$", start):
+            end = source.find("$$", start + 2)
+            if end < 0:
+                raise ParseError("Unclosed $$ display block")
+            expr = source[start + 2:end].strip()
+            out.append(Action(Kind.DISPLAY_START))
+            out.extend(parse_math(expr))
+            out.append(Action(Kind.DISPLAY_END))
+            cursor = end + 2
+        else:
+            end = source.find("$", start + 1)
+            if end < 0:
+                raise ParseError("Unclosed $ inline-math block")
+            expr = source[start + 1:end].strip()
+            out.append(Action(Kind.MATH_START))
+            out.extend(parse_math(expr))
+            out.append(Action(Kind.MATH_END))
+            cursor = end + 1
     return out

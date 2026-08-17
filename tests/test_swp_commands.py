@@ -1,6 +1,6 @@
 import pytest
 
-from swp5_input.actions import Action, Kind
+from swp5_input.actions import Action, Kind, parse_plot_2d_range_command
 from swp5_input.driver import DriverError, SWPDriver
 from swp5_input.parser import ParseError, parse_document, parse_swp_command
 
@@ -47,6 +47,26 @@ def test_supported_command_parser():
     )
 
 
+def test_parameterized_plot_range_parser():
+    command = "plot:2d-rectangular-range:0:1.45"
+    assert parse_plot_2d_range_command(command) == (0.0, 1.45)
+    assert parse_swp_command(command) == Action(Kind.SWP_COMMAND, command)
+
+
+def test_parameterized_plot_range_reenters_math():
+    actions = parse_document(
+        "$$x\\tan x,1$$\n[[swp:plot:2d-rectangular-range:0:1.45]]"
+    )
+    command_index = next(i for i, action in enumerate(actions) if action.kind == Kind.SWP_COMMAND)
+    assert actions[command_index - 1].kind == Kind.CURSOR_LEFT
+    assert actions[command_index].value == "plot:2d-rectangular-range:0:1.45"
+
+
+def test_invalid_parameterized_plot_range_fails_closed():
+    with pytest.raises(ParseError):
+        parse_document("[[swp:plot:2d-rectangular-range:2:1]]")
+
+
 def test_unknown_directive_fails_closed():
     with pytest.raises(ParseError):
         parse_document("[[swp:compute:invent-result]]")
@@ -83,6 +103,16 @@ def test_driver_uses_rectangular_2d_plot_command():
     driver._send_swp_command("plot:2d")
 
     assert window.calls == ["Compute->Plot 2D->Rectangular"]
+
+
+def test_driver_dispatches_parameterized_plot_range():
+    driver = SWPDriver()
+    calls = []
+    driver._send_plot_2d_with_interval = lambda xmin, xmax: calls.append((xmin, xmax))
+
+    driver._send_swp_command("plot:2d-rectangular-range:0:1.45")
+
+    assert calls == [(0.0, 1.45)]
 
 
 def test_driver_falls_back_for_plot_menu_spelling():

@@ -15,6 +15,29 @@ SUPPORTED_SWP_COMMANDS = (
     "typeset:preview-pdf",
 )
 
+PLOT_2D_RANGE_PREFIX = "plot:2d-rectangular-range:"
+
+
+def parse_plot_2d_range_command(command: str) -> tuple[float, float] | None:
+    """Return (xmin, xmax) for a parameterized rectangular plot directive."""
+    if not command.startswith(PLOT_2D_RANGE_PREFIX):
+        return None
+    payload = command[len(PLOT_2D_RANGE_PREFIX):]
+    parts = payload.split(":")
+    if len(parts) != 2:
+        return None
+    try:
+        xmin, xmax = (float(part) for part in parts)
+    except ValueError:
+        return None
+    if not xmin < xmax:
+        return None
+    return xmin, xmax
+
+
+def is_supported_swp_command(command: str) -> bool:
+    return command in SUPPORTED_SWP_COMMANDS or parse_plot_2d_range_command(command) is not None
+
 
 class Kind(str, Enum):
     TEXT = "text"

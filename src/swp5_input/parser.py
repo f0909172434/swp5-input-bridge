@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .actions import Action, Kind, SUPPORTED_SWP_COMMANDS
+from .actions import Action, Kind, SUPPORTED_SWP_COMMANDS, is_supported_swp_command
 
 
 class ParseError(ValueError):
@@ -176,9 +176,12 @@ def parse_math(source: str) -> list[Action]:
 
 def parse_swp_command(command: str) -> Action:
     command = command.strip()
-    if command not in SUPPORTED_SWP_COMMANDS:
+    if not is_supported_swp_command(command):
         supported = ", ".join(SUPPORTED_SWP_COMMANDS)
-        raise ParseError(f"Unsupported SWP command {command!r}. Supported commands: {supported}")
+        raise ParseError(
+            f"Unsupported SWP command {command!r}. Supported commands: {supported}, "
+            "or plot:2d-rectangular-range:<xmin>:<xmax>"
+        )
     return Action(Kind.SWP_COMMAND, command)
 
 

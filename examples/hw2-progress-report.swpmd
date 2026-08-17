@@ -1,0 +1,513 @@
+Local bifurcation analysis near rho = 0
+
+1. Problem and branch formulation
+
+Consider the one-dimensional Minkowski-curvature problem
+
+$$
+-\left(\frac{u'}{\sqrt{1-(u')^2}}\right)'=\lambda f(u),\qquad 0<x<L,
+$$
+
+with the Neumann-Robin boundary conditions
+
+$$
+u'(0)=0,\qquad u'(L)+\alpha u(L)=0.
+$$
+
+Assume that $L>0$, $\alpha>0$, $\lambda>0$, $f$ belongs to $C^1([0,+\infty))$, and $f(s)>0$ for $s>0$. We study positive spacelike solutions and use the maximum value
+
+$$
+\rho=u(0)
+$$
+
+as the amplitude parameter. Put
+
+$$
+F(s)=\int_0^s f(t)dt.
+$$
+
+Lemma 1.1. Let $u$ be a positive solution and put
+
+$$
+m=-u'(L).
+$$
+
+Then $u$ is strictly decreasing on $[0,L]$ and
+
+$$
+0<m<\min(1,\alpha\rho),\qquad u(L)=\frac{m}{\alpha}.
+$$
+
+Moreover,
+
+$$
+\frac{1}{\sqrt{1-[u'(x)]^2}}-1
+=\lambda[F(\rho)-F(u(x))].
+$$
+
+Proof. Since
+
+$$
+\left(\frac{u'}{\sqrt{1-(u')^2}}\right)'=-\lambda f(u)<0,
+$$
+
+and $u'(0)=0$, we have $u'(x)<0$ for $0<x\leq L$. Hence $m=-u'(L)>0$. The spacelike condition gives $m<1$, and the Robin condition gives
+
+$$
+u(L)=\frac{m}{\alpha}<\rho,
+$$
+
+so $m<\alpha\rho$. Multiplying the differential equation by $u'(x)$ and integrating from $0$ to $x$ gives
+
+$$
+\frac{1}{\sqrt{1-[u'(x)]^2}}+\lambda F(u(x))
+=1+\lambda F(\rho),
+$$
+
+which is the stated first integral. The proof is complete.
+
+At $x=L$, the first integral gives
+
+$$
+\frac{1}{\sqrt{1-m^2}}-1
+=\lambda\left[F(\rho)-F\left(\frac{m}{\alpha}\right)\right].
+$$
+
+Thus define
+
+$$
+\Lambda_\rho(m)
+=\frac{\frac{1}{\sqrt{1-m^2}}-1}
+{F(\rho)-F\left(\frac{m}{\alpha}\right)}.
+$$
+
+The corresponding time map is
+
+$$
+T_\rho(m,\lambda)
+=\int_{m/\alpha}^{\rho}
+\frac{1+\lambda[F(\rho)-F(s)]}
+{\sqrt{\lambda[F(\rho)-F(s)][2+\lambda[F(\rho)-F(s)]]}}ds.
+$$
+
+Every positive solution therefore satisfies
+
+$$
+T_\rho(m,\Lambda_\rho(m))=L.
+$$
+
+For all sufficiently small $\rho>0$, one has $0<\alpha\rho<1$ and $\rho<L$. On $0<m<\alpha\rho$, the function $\Lambda_\rho(m)$ is strictly increasing, while $T_\rho(m,\lambda)$ is strictly decreasing with respect to both $m$ and $\lambda$. Hence
+
+$$
+T_\rho(m,\Lambda_\rho(m))
+$$
+
+is strictly decreasing in $m$. In addition,
+
+$$
+\lim_{m\to0^+}T_\rho(m,\Lambda_\rho(m))=+\infty,
+$$
+
+and
+
+$$
+\lim_{m\to(\alpha\rho)^-}T_\rho(m,\Lambda_\rho(m))=0.
+$$
+
+Consequently, for each sufficiently small $\rho>0$, there exists a unique $m_\rho$ such that
+
+$$
+T_\rho(m_\rho,\Lambda_\rho(m_\rho))=L.
+$$
+
+Thus the local bifurcation branch is parameterized by
+
+$$
+(\Lambda_\rho(m_\rho),\rho).
+$$
+
+2. Left-end classification
+
+The quantity appearing in the local analysis is
+
+$$
+\lim_{u\to0^+}\frac{F(u)}{u^2}.
+$$
+
+If $f(0)=0$, then L'Hopital's rule gives
+
+$$
+\lim_{u\to0^+}\frac{F(u)}{u^2}
+=\lim_{u\to0^+}\frac{f(u)}{2u}
+=\frac{f'(0)}{2}.
+$$
+
+If $f(0)>0$, then
+
+$$
+\lim_{u\to0^+}\frac{F(u)}{u^2}=+\infty.
+$$
+
+Theorem 2.1 (left-end behavior). The left endpoint of the local bifurcation branch has the following three cases.
+
+(i) If
+
+$$
+\lim_{u\to0^+}\frac{F(u)}{u^2}=+\infty,
+$$
+
+or equivalently $f(0)>0$, then the branch starts from the origin and
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0.
+$$
+
+(ii) If
+
+$$
+0<\lim_{u\to0^+}\frac{F(u)}{u^2}<+\infty,
+$$
+
+or equivalently $f(0)=0$ and $f'(0)>0$, then the branch starts from the finite point
+
+$$
+\left(\frac{\theta_0^2}{f'(0)L^2},0\right),
+$$
+
+where $\theta_0$ is the unique number satisfying
+
+$$
+0<\theta_0<\frac{\pi}{2},\qquad \theta_0\tan\theta_0=\alpha L.
+$$
+
+In particular,
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)
+=\frac{\theta_0^2}{f'(0)L^2}.
+$$
+
+(iii) If
+
+$$
+\lim_{u\to0^+}\frac{F(u)}{u^2}=0,
+$$
+
+or equivalently $f(0)=f'(0)=0$, then the branch tends to infinity along $\rho=0$ and
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=+\infty.
+$$
+
+Proof. We prove the three cases separately.
+
+Case 1. Assume that $f(0)>0$. Suppose to the contrary that
+
+$$
+\limsup_{\rho\to0^+}\Lambda_\rho(m_\rho)>0.
+$$
+
+Then there exist $M>0$ and a sequence $\rho_n\to0^+$ such that, with
+
+$$
+m_n=m_{\rho_n},\qquad \lambda_n=\Lambda_{\rho_n}(m_{\rho_n}),
+$$
+
+we have $\lambda_n\geq M$ for all $n$. Since $0<m_n<\alpha\rho_n$, we have $m_n\to0$. By the monotonicity of the time map,
+
+$$
+L=T_{\rho_n}(m_n,\lambda_n)
+\leq
+\int_0^{\rho_n}
+\frac{1+M[F(\rho_n)-F(s)]}
+{\sqrt{M[F(\rho_n)-F(s)][2+M[F(\rho_n)-F(s)]]}}ds.
+$$
+
+Since $f(0)>0$ and $f$ is continuous, there exist $\delta>0$ and $c,C>0$ such that
+
+$$
+c\leq f(s)\leq C
+$$
+
+for $0\leq s\leq\delta$. Thus, for $0<\rho<\delta$ and $0\leq s<\rho$,
+
+$$
+c(\rho-s)\leq F(\rho)-F(s)\leq C(\rho-s)\leq C\delta.
+$$
+
+Consequently,
+
+$$
+L\leq
+\frac{1+MC\delta}{\sqrt{2Mc}}
+\int_0^{\rho_n}\frac{1}{\sqrt{\rho_n-s}}ds
+=\frac{2(1+MC\delta)}{\sqrt{2Mc}}\sqrt{\rho_n}.
+$$
+
+Letting $n\to\infty$ gives $L\leq0$, which is a contradiction. Therefore
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0.
+$$
+
+Case 2. Assume that $f(0)=0$ and put $a=f'(0)>0$. Let $\rho_n\to0^+$ be arbitrary, and write
+
+$$
+m_n=m_{\rho_n},\qquad
+\lambda_n=\Lambda_{\rho_n}(m_{\rho_n}),\qquad
+q_n=\frac{m_n}{\alpha\rho_n}.
+$$
+
+For all sufficiently large $n$, $0<q_n<1$. Let $0<\epsilon<a$. Since $f(s)/s\to a$ as $s\to0^+$, for all sufficiently large $n$,
+
+$$
+(a-\epsilon)s\leq f(s)\leq(a+\epsilon)s
+$$
+
+for $0\leq s\leq\rho_n$. Hence, uniformly for $q_n\leq y\leq1$,
+
+$$
+\frac{a-\epsilon}{2}\rho_n^2(1-y^2)
+\leq F(\rho_n)-F(\rho_n y)
+\leq\frac{a+\epsilon}{2}\rho_n^2(1-y^2).
+$$
+
+In particular,
+
+$$
+\frac{a-\epsilon}{a+\epsilon}\frac{1-y^2}{1-q_n^2}
+\leq
+\frac{F(\rho_n)-F(\rho_n y)}{F(\rho_n)-F(\rho_n q_n)}
+\leq
+\frac{a+\epsilon}{a-\epsilon}\frac{1-y^2}{1-q_n^2}.
+$$
+
+The terminal identity gives
+
+$$
+\lambda_n[F(\rho_n)-F(\rho_n q_n)]
+=\frac{1}{\sqrt{1-m_n^2}}-1.
+$$
+
+Since $m_n\to0$,
+
+$$
+\frac{\frac{1}{\sqrt{1-m_n^2}}-1}{m_n^2}\to\frac{1}{2}.
+$$
+
+Moreover, for $q_n\leq y\leq1$,
+
+$$
+0\leq\lambda_n[F(\rho_n)-F(\rho_n y)]
+\leq\frac{1}{\sqrt{1-m_n^2}}-1\to0.
+$$
+
+Thus
+
+$$
+\frac{1+\lambda_n[F(\rho_n)-F(\rho_n y)]}
+{\sqrt{2+\lambda_n[F(\rho_n)-F(\rho_n y)]}}
+$$
+
+converges uniformly to $1/\sqrt{2}$. After the change of variable $s=\rho_n y$ in the time-map equation, the preceding estimates give
+
+$$
+\sqrt{\frac{a-\epsilon}{a+\epsilon}}
+\frac{\sqrt{1-q_n^2}}{\alpha q_n}\arccos q_n(1+o(1))
+\leq L,
+$$
+
+and
+
+$$
+L\leq
+\sqrt{\frac{a+\epsilon}{a-\epsilon}}
+\frac{\sqrt{1-q_n^2}}{\alpha q_n}\arccos q_n(1+o(1)).
+$$
+
+If a subsequence satisfied $q_n\to0$, then the first lower bound would tend to $+\infty$, which is impossible. If a subsequence satisfied $q_n\to1$, then the second upper bound would tend to $0$, which is also impossible. Hence every accumulation point of $q_n$ belongs to the open interval between $0$ and $1$.
+
+Let a subsequence satisfy $q_n\to q$ with $0<q<1$. First let $n\to\infty$ in the preceding bounds and then let $\epsilon\to0^+$. We obtain
+
+$$
+L=\frac{\sqrt{1-q^2}}{\alpha q}\arccos q.
+$$
+
+Put
+
+$$
+q=\cos\theta,\qquad 0<\theta<\frac{\pi}{2}.
+$$
+
+Then
+
+$$
+\theta\tan\theta=\alpha L.
+$$
+
+Since $\theta\tan\theta$ is strictly increasing for $0<\theta<\pi/2$, we have $\theta=\theta_0$ and therefore
+
+$$
+q=\cos\theta_0.
+$$
+
+Thus every accumulation point of $q_n$ is $\cos\theta_0$, and hence
+
+$$
+q_n\to\cos\theta_0.
+$$
+
+Finally,
+
+$$
+\lambda_n
+=\frac{\frac{1}{\sqrt{1-m_n^2}}-1}
+{F(\rho_n)-F(\rho_n q_n)}
+\to\frac{\alpha^2\cos^2\theta_0}{a\sin^2\theta_0}
+=\frac{\theta_0^2}{aL^2}.
+$$
+
+Since $\rho_n\to0^+$ was arbitrary,
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)
+=\frac{\theta_0^2}{f'(0)L^2}.
+$$
+
+Case 3. Assume that $f(0)=f'(0)=0$. Suppose to the contrary that
+
+$$
+\liminf_{\rho\to0^+}\Lambda_\rho(m_\rho)<+\infty.
+$$
+
+Then there exist $M>0$ and a sequence $\rho_n\to0^+$ such that, with
+
+$$
+m_n=m_{\rho_n},\qquad \lambda_n=\Lambda_{\rho_n}(m_{\rho_n}),
+$$
+
+we have $\lambda_n\leq M$ for all $n$. Put
+
+$$
+q_n=\frac{m_n}{\alpha\rho_n}.
+$$
+
+Since $f(s)/s\to0$ as $s\to0^+$, for every $\epsilon>0$ and all sufficiently large $n$,
+
+$$
+0<f(s)\leq\epsilon s
+$$
+
+for $0<s\leq\rho_n$. By the terminal identity,
+
+$$
+\frac{1}{\sqrt{1-m_n^2}}-1
+=\lambda_n\left[F(\rho_n)-F\left(\frac{m_n}{\alpha}\right)\right].
+$$
+
+Since
+
+$$
+\frac{1}{\sqrt{1-m_n^2}}-1\geq\frac{m_n^2}{2},
+$$
+
+we obtain
+
+$$
+\frac{m_n^2}{2}
+\leq\frac{M\epsilon}{2}\left(\rho_n^2-\frac{m_n^2}{\alpha^2}\right),
+$$
+
+and hence
+
+$$
+\alpha^2q_n^2\leq M\epsilon(1-q_n^2).
+$$
+
+Choose $\epsilon>0$ so small that
+
+$$
+3M\epsilon<\alpha^2
+$$
+
+and
+
+$$
+\frac{1}{4\sqrt{3M\epsilon/2}}>L.
+$$
+
+Then $q_n<1/2$ for all sufficiently large $n$, so $m_n/\alpha<\rho_n/2$. Since $T_\rho(m,\lambda)$ is strictly decreasing with respect to $\lambda$,
+
+$$
+L=T_{\rho_n}(m_n,\lambda_n)\geq T_{\rho_n}(m_n,M).
+$$
+
+For $\rho_n/2\leq s\leq3\rho_n/4$,
+
+$$
+0<F(\rho_n)-F(s)
+\leq\frac{\epsilon}{2}(\rho_n^2-s^2)
+\leq\frac{\epsilon\rho_n^2}{2}.
+$$
+
+For all sufficiently large $n$,
+
+$$
+M[F(\rho_n)-F(s)]\leq1,
+$$
+
+and therefore
+
+$$
+2+M[F(\rho_n)-F(s)]\leq3.
+$$
+
+It follows that
+
+$$
+T_{\rho_n}(m_n,M)
+\geq
+\int_{\rho_n/2}^{3\rho_n/4}
+\frac{1}{\sqrt{M[F(\rho_n)-F(s)][2+M[F(\rho_n)-F(s)]]}}ds
+\geq\frac{1}{4\sqrt{3M\epsilon/2}}.
+$$
+
+Consequently,
+
+$$
+L\geq\frac{1}{4\sqrt{3M\epsilon/2}}>L,
+$$
+
+which is a contradiction. Therefore
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=+\infty.
+$$
+
+The proof is complete.
+
+3. SWP computational illustration
+
+This subsection is only a numerical and graphical check; it is not used in the proof of Theorem 2.1.
+
+For the illustrative normalization $\alpha L=1$, the characteristic equation becomes
+
+$$
+\theta\tan\theta=1.
+$$
+
+Its root in the interval from $0$ to $\pi/2$ is approximately $0.860333589$. SWP evaluates the following expression numerically:
+
+$$
+0.860333589\tan(0.860333589)
+$$
+[[swp:compute:evaluate-numerically]]
+
+The result should be close to $1$. To visualize the monotonicity leading to uniqueness of the characteristic root, SWP generates a two-dimensional plot from
+
+$$
+x\tan x
+$$
+[[swp:plot:2d]]
+
+The plotted function is strictly increasing on the interval from $0$ to $\pi/2$, with value $0$ at the left endpoint and divergence to $+\infty$ at the right endpoint. Hence the equation $\theta\tan\theta=\alpha L$ has exactly one solution $\theta_0$ in that interval for every $\alpha L>0$.

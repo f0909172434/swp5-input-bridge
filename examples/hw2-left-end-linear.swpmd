@@ -16,52 +16,80 @@ $$
 \lim_{u\to0^+}\frac{F(u)}{u^2}=\lim_{u\to0^+}\frac{f(u)}{2u}=\frac{f'(0)}{2}.
 $$
 
-Let $\rho_n\to0^+$ be arbitrary, and write
+Put $a=f'(0)$. Let $\rho_n\to0^+$ be arbitrary, and write
 
 $$
 m_n=m_{\rho_n},\qquad \lambda_n=\Lambda_{\rho_n}(m_{\rho_n}),\qquad q_n=\frac{m_n}{\alpha\rho_n}.
 $$
 
-For all sufficiently large $n$, we have $0<q_n<1$. Passing to a subsequence if necessary, assume that $q_n\to q$ for some $0\leq q\leq1$.
-
-Let $\varepsilon>0$ be given. Since $f(u)/u\to f'(0)$ as $u\to0^+$, for all sufficiently large $n$,
+For all sufficiently large $n$, $0<q_n<1$. Let $0<\epsilon<a$. Since $f(s)/s\to a$ as $s\to0^+$, for all sufficiently large $n$,
 
 $$
-(f'(0)-\varepsilon)s\leq f(s)\leq(f'(0)+\varepsilon)s
+(a-\epsilon)s\leq f(s)\leq(a+\epsilon)s
 $$
 
 for $0\leq s\leq\rho_n$. Hence, uniformly for $q_n\leq y\leq1$,
 
 $$
-F(\rho_n)-F(\rho_n y)=\frac{f'(0)}{2}\rho_n^2(1-y^2)(1+o(1)).
+\frac{a-\epsilon}{2}\rho_n^2(1-y^2)
+\leq F(\rho_n)-F(\rho_n y)
+\leq\frac{a+\epsilon}{2}\rho_n^2(1-y^2).
 $$
 
-Moreover,
+Therefore
 
 $$
-\frac{1}{\sqrt{1-m_n^2}}-1=\frac{m_n^2}{2}(1+o(1))
-=\frac{\alpha^2\rho_n^2q_n^2}{2}(1+o(1)).
+\frac{a-\epsilon}{a+\epsilon}\frac{1-y^2}{1-q_n^2}
+\leq
+\frac{F(\rho_n)-F(\rho_n y)}{F(\rho_n)-F(\rho_n q_n)}
+\leq
+\frac{a+\epsilon}{a-\epsilon}\frac{1-y^2}{1-q_n^2}.
 $$
 
-By the definition of $\Lambda_\rho$, we obtain
+The terminal identity gives
 
 $$
-\lambda_n=\frac{\alpha^2q_n^2}{f'(0)(1-q_n^2)}(1+o(1)).
+\lambda_n[F(\rho_n)-F(\rho_n q_n)]
+=\frac{1}{\sqrt{1-m_n^2}}-1.
 $$
 
-Also,
+Since $m_n\to0$,
 
 $$
-0\leq\lambda_n[F(\rho_n)-F(s)]\leq\frac{1}{\sqrt{1-m_n^2}}-1\to0
+\frac{\frac{1}{\sqrt{1-m_n^2}}-1}{m_n^2}\to\frac{1}{2}.
 $$
 
-for $m_n/\alpha\leq s\leq\rho_n$. Thus, after the change of variable $s=\rho_n y$ in the time-map equation,
+Moreover, for $q_n\leq y\leq1$,
+
+$$
+0\leq\lambda_n[F(\rho_n)-F(\rho_n y)]
+\leq\frac{1}{\sqrt{1-m_n^2}}-1\to0.
+$$
+
+Thus
+
+$$
+\frac{1+\lambda_n[F(\rho_n)-F(\rho_n y)]}{\sqrt{2+\lambda_n[F(\rho_n)-F(\rho_n y)]}}
+$$
+
+converges uniformly to $1/\sqrt{2}$. After the change of variable $s=\rho_n y$ in the time-map equation, the preceding estimates give
+
+$$
+\sqrt{\frac{a-\epsilon}{a+\epsilon}}
+\frac{\sqrt{1-q_n^2}}{\alpha q_n}\arccos q_n(1+o(1))
+\leq L
+\leq
+\sqrt{\frac{a+\epsilon}{a-\epsilon}}
+\frac{\sqrt{1-q_n^2}}{\alpha q_n}\arccos q_n(1+o(1)).
+$$
+
+If a subsequence satisfied $q_n\to0$, then the left-hand side would tend to $+\infty$, which is impossible. If a subsequence satisfied $q_n\to1$, then the right-hand side would tend to $0$, which is also impossible. Hence every accumulation point of $q_n$ belongs to the open interval between $0$ and $1$.
+
+Let a subsequence satisfy $q_n\to q$ with $0<q<1$. First let $n\to\infty$ in the preceding two-sided estimate and then let $\epsilon\to0^+$. We obtain
 
 $$
 L=\frac{\sqrt{1-q^2}}{\alpha q}\arccos q.
 $$
-
-The same two-sided estimates show that $q=0$ would force $L$ to be infinite, while $q=1$ would force $L=0$. Hence $0<q<1$.
 
 Put
 
@@ -81,12 +109,19 @@ $$
 q=\cos\theta_0.
 $$
 
-Consequently,
+Thus every accumulation point of $q_n$ is $\cos\theta_0$, and hence
 
 $$
-\lim_{n\to\infty}\lambda_n
-=\frac{\alpha^2\cos^2\theta_0}{f'(0)\sin^2\theta_0}
-=\frac{\theta_0^2}{f'(0)L^2}.
+q_n\to\cos\theta_0.
+$$
+
+Finally,
+
+$$
+\lambda_n
+=\frac{\frac{1}{\sqrt{1-m_n^2}}-1}{F(\rho_n)-F(\rho_n q_n)}
+\to\frac{\alpha^2\cos^2\theta_0}{a\sin^2\theta_0}
+=\frac{\theta_0^2}{aL^2}.
 $$
 
 Since the sequence $\rho_n\to0^+$ was arbitrary, we obtain

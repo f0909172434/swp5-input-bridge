@@ -6,9 +6,9 @@ import sys
 from pathlib import Path
 
 from . import __version__
-from .actions import Action, Kind
+from .actions import Action, Kind, SUPPORTED_SWP_COMMANDS
 from .driver import DriverError, SWPDriver
-from .parser import ParseError, parse_document, parse_math
+from .parser import ParseError, parse_document, parse_math, parse_swp_command
 
 
 def _actions_from_args(args):
@@ -30,8 +30,18 @@ def cmd_write(args) -> int:
         print("Refusing live input without --yes. Run 'plan' first, then repeat with --yes.", file=sys.stderr)
         return 2
     actions = _actions_from_args(args)
-    driver = SWPDriver(pause=args.pause)
+    driver = SWPDriver(pause=args.pause, command_pause=args.command_pause)
     driver.execute(actions)
+    return 0
+
+
+def cmd_command(args) -> int:
+    if not args.yes:
+        print("Refusing live SWP command without --yes.", file=sys.stderr)
+        return 2
+    action = parse_swp_command(args.swp_command)
+    driver = SWPDriver(command_pause=args.command_pause)
+    driver.execute([action])
     return 0
 
 
@@ -52,7 +62,7 @@ def cmd_doctor(_args) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="swp5-input", description="Scientific WorkPlace 5.5 math input bridge")
+    parser = argparse.ArgumentParser(prog="swp5-input", description="Scientific WorkPlace 5.5 document automation bridge")
     parser.add_argument("--version", action="version", version=__version__)
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -61,16 +71,24 @@ def build_parser() -> argparse.ArgumentParser:
 
     for name, func, help_text in [
         ("plan", cmd_plan, "parse input and print actions without touching SWP"),
-        ("write", cmd_write, "send parsed actions to the focused SWP 5.5 window"),
+        ("write", cmd_write, "send parsed document, math, and SWP actions to SWP 5.5"),
     ]:
         p = sub.add_parser(name, help=help_text)
         source = p.add_mutually_exclusive_group(required=True)
         source.add_argument("--expr", help="restricted LaTeX-like math expression")
-        source.add_argument("--file", help="UTF-8 .swpmd file with $$ display-math blocks")
+        source.add_argument("--file", help="UTF-8 .swpmd file with math blocks and optional [[swp:...]] directives")
         if name == "write":
             p.add_argument("--yes", action="store_true", help="required acknowledgement for live input")
-            p.add_argument("--pause", type=float, default=0.03, help="pause between actions in seconds")
+            p.add_argument("--pause", type=float, default=0.03, help="pause between ordinary input actions in seconds")
+            p.add_argument("--command-pause", type=float, default=0.8, help="settling pause after Compute/Plot/Typeset actions")
         p.set_defaults(func=func)
+
+    command = sub.add_parser("command", help="invoke one semantic SWP Compute/Plot/Typeset command")
+    command.add_argument("swp_command", choices=SUPPORTED_SWP_COMMANDS)
+    command.add_argument("--yes", action="store_true", help="required acknowledgement for live SWP command")
+    command.add_argument("--command-pause", type=float, default=0.8, help="settling pause after the command")
+    command.set_defaults(func=cmd_command)
+
     return parser
 
 

@@ -10,22 +10,18 @@ $$
 \limsup_{\rho\to0^+}\Lambda_\rho(m_\rho)>0.
 $$
 
-Then there exist $M>0$ and a sequence $\rho_n$ such that
+Then there exist $M>0$ and a sequence $\rho_n\to0^+$ such that, with
 
 $$
-\rho_n\to0^+,\Lambda_{\rho_n}(m_{\rho_n})\geq M.
+m_n=m_{\rho_n},\qquad \lambda_n=\Lambda_{\rho_n}(m_{\rho_n}),
 $$
 
-Since $0<m_{\rho_n}<\alpha\rho_n$, we have
+we have $\lambda_n\geq M$ for all $n$. Since $0<m_n<\alpha\rho_n$, we have $m_n\to0$. Since $T_\rho(m,\lambda)$ is strictly decreasing with respect to both $m$ and $\lambda$,
 
 $$
-m_{\rho_n}\to0.
-$$
-
-Since $T_\rho(m,\lambda)$ is strictly decreasing with respect to both $m$ and $\lambda$, we obtain
-
-$$
-L=T_{\rho_n}(m_{\rho_n},\Lambda_{\rho_n}(m_{\rho_n}))\leq T_{\rho_n}(0,M).
+L=T_{\rho_n}(m_n,\lambda_n)
+\leq
+\int_0^{\rho_n}\frac{1+M[F(\rho_n)-F(s)]}{\sqrt{M[F(\rho_n)-F(s)][2+M[F(\rho_n)-F(s)]]}}ds.
 $$
 
 Since $f(0)>0$ and $f$ is continuous, there exist $\delta>0$ and $c,C>0$ such that
@@ -43,14 +39,8 @@ $$
 Therefore
 
 $$
-T_\rho(0,M)\leq\frac{1+MC\delta}{\sqrt{2Mc}}\int_0^\rho\frac{1}{\sqrt{\rho-s}}ds
-=\frac{2(1+MC\delta)}{\sqrt{2Mc}}\sqrt{\rho}.
-$$
-
-Hence
-
-$$
-\lim_{\rho\to0^+}T_\rho(0,M)=0.
+L\leq\frac{1+MC\delta}{\sqrt{2Mc}}\int_0^{\rho_n}\frac{1}{\sqrt{\rho_n-s}}ds
+=\frac{2(1+MC\delta)}{\sqrt{2Mc}}\sqrt{\rho_n}.
 $$
 
 Letting $n\to\infty$ gives $L\leq0$, which is a contradiction. Therefore

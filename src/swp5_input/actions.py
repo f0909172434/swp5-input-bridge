@@ -32,6 +32,7 @@ class Kind(str, Enum):
     NEXT_FIELD = "next_field"
     EXIT_TEMPLATE = "exit_template"
     NEWLINE = "newline"
+    CURSOR_LEFT = "cursor_left"
     SWP_COMMAND = "swp_command"
 
 

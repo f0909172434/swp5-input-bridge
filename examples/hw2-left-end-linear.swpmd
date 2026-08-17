@@ -1,0 +1,96 @@
+(3) Assume that $f(0)=0$ and $f'(0)>0$. We prove that
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=\frac{\theta_0^2}{f'(0)L^2},
+$$
+
+where $\theta_0$ is the unique number satisfying
+
+$$
+0<\theta_0<\frac{\pi}{2},\qquad \theta_0\tan\theta_0=\alpha L.
+$$
+
+Since $f(0)=0$, L'Hopital's rule gives
+
+$$
+\lim_{u\to0^+}\frac{F(u)}{u^2}=\lim_{u\to0^+}\frac{f(u)}{2u}=\frac{f'(0)}{2}.
+$$
+
+Let $\rho_n\to0^+$ be arbitrary, and write
+
+$$
+m_n=m_{\rho_n},\qquad \lambda_n=\Lambda_{\rho_n}(m_{\rho_n}),\qquad q_n=\frac{m_n}{\alpha\rho_n}.
+$$
+
+For all sufficiently large $n$, we have $0<q_n<1$. Passing to a subsequence if necessary, assume that $q_n\to q$ for some $0\leq q\leq1$.
+
+Let $\varepsilon>0$ be given. Since $f(u)/u\to f'(0)$ as $u\to0^+$, for all sufficiently large $n$,
+
+$$
+(f'(0)-\varepsilon)s\leq f(s)\leq(f'(0)+\varepsilon)s
+$$
+
+for $0\leq s\leq\rho_n$. Hence, uniformly for $q_n\leq y\leq1$,
+
+$$
+F(\rho_n)-F(\rho_n y)=\frac{f'(0)}{2}\rho_n^2(1-y^2)(1+o(1)).
+$$
+
+Moreover,
+
+$$
+\frac{1}{\sqrt{1-m_n^2}}-1=\frac{m_n^2}{2}(1+o(1))
+=\frac{\alpha^2\rho_n^2q_n^2}{2}(1+o(1)).
+$$
+
+By the definition of $\Lambda_\rho$, we obtain
+
+$$
+\lambda_n=\frac{\alpha^2q_n^2}{f'(0)(1-q_n^2)}(1+o(1)).
+$$
+
+Also,
+
+$$
+0\leq\lambda_n[F(\rho_n)-F(s)]\leq\frac{1}{\sqrt{1-m_n^2}}-1\to0
+$$
+
+for $m_n/\alpha\leq s\leq\rho_n$. Thus, after the change of variable $s=\rho_n y$ in the time-map equation,
+
+$$
+L=\frac{\sqrt{1-q^2}}{\alpha q}\arccos q.
+$$
+
+The same two-sided estimates show that $q=0$ would force $L$ to be infinite, while $q=1$ would force $L=0$. Hence $0<q<1$.
+
+Put
+
+$$
+q=\cos\theta,\qquad 0<\theta<\frac{\pi}{2}.
+$$
+
+Then
+
+$$
+\theta\tan\theta=\alpha L.
+$$
+
+Since $\theta\tan\theta$ is strictly increasing for $0<\theta<\pi/2$, we have $\theta=\theta_0$ and therefore
+
+$$
+q=\cos\theta_0.
+$$
+
+Consequently,
+
+$$
+\lim_{n\to\infty}\lambda_n
+=\frac{\alpha^2\cos^2\theta_0}{f'(0)\sin^2\theta_0}
+=\frac{\theta_0^2}{f'(0)L^2}.
+$$
+
+Since the sequence $\rho_n\to0^+$ was arbitrary, we obtain
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=\frac{\theta_0^2}{f'(0)L^2}.
+$$

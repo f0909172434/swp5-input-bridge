@@ -1,0 +1,60 @@
+(2) We prove that
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0.
+$$
+
+Suppose to the contrary that
+
+$$
+\limsup_{\rho\to0^+}\Lambda_\rho(m_\rho)>0.
+$$
+
+Then there exist $M>0$ and a sequence $\rho_n$ such that
+
+$$
+\rho_n\to0^+,\Lambda_{\rho_n}(m_{\rho_n})\geq M.
+$$
+
+Since $0<m_{\rho_n}<\alpha\rho_n$, we have
+
+$$
+m_{\rho_n}\to0.
+$$
+
+Since $T_\rho(m,\lambda)$ is strictly decreasing with respect to both $m$ and $\lambda$, we obtain
+
+$$
+L=T_{\rho_n}(m_{\rho_n},\Lambda_{\rho_n}(m_{\rho_n}))\leq T_{\rho_n}(0,M).
+$$
+
+Since $f(0)>0$ and $f$ is continuous, there exist $\delta>0$ and $c,C>0$ such that
+
+$$
+c\leq f(s)\leq C
+$$
+
+for $0\leq s\leq\delta$. Thus, for $0<\rho<\delta$ and $0\leq s<\rho$,
+
+$$
+c(\rho-s)\leq F(\rho)-F(s)\leq C(\rho-s)\leq C\delta.
+$$
+
+Therefore
+
+$$
+T_\rho(0,M)\leq\frac{1+MC\delta}{\sqrt{2Mc}}\int_0^\rho\frac{1}{\sqrt{\rho-s}}ds
+=\frac{2(1+MC\delta)}{\sqrt{2Mc}}\sqrt{\rho}.
+$$
+
+Hence
+
+$$
+\lim_{\rho\to0^+}T_\rho(0,M)=0.
+$$
+
+Letting $n\to\infty$ gives $L\leq0$, which is a contradiction. Therefore
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0.
+$$

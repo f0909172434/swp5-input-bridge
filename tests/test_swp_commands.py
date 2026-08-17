@@ -129,6 +129,18 @@ def test_driver_falls_back_for_plot_menu_spelling():
     ]
 
 
+def test_legacy_plot_properties_title_is_recognized():
+    assert SWPDriver._is_plot_properties_title("Plot Properties")
+    assert SWPDriver._is_plot_properties_title("  Plot Properties  ")
+    assert not SWPDriver._is_plot_properties_title("Scientific WorkPlace")
+
+
+def test_legacy_interval_dialog_titles_are_recognized():
+    assert SWPDriver._is_interval_dialog_title("Plot Intervals")
+    assert SWPDriver._is_interval_dialog_title("Variables and Intervals")
+    assert not SWPDriver._is_interval_dialog_title("Plot Properties")
+
+
 def test_driver_rejects_unknown_command():
     driver = SWPDriver()
     driver._keyboard = FakeKeyboard()

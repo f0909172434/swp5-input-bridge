@@ -1,14 +1,14 @@
 # swp5-input-bridge
 
-`swp5-input-bridge` is a small, keyboard-first Windows automation bridge for entering structured mathematics into **Scientific WorkPlace 5.5** as native SWP math objects.
+`swp5-input-bridge` is a conservative Windows automation bridge for **Scientific WorkPlace 5.5**. It enters structured mathematics as native SWP objects and can now invoke selected SWP Compute, Plot, and Typeset commands through the real application UI.
 
-It exists for one narrow problem: pasting LaTeX-like text into SWP 5.5 produces literal source such as `\frac` and `\rho`. This bridge parses a conservative subset of LaTeX-like notation and replays the equivalent SWP 5.5 keyboard actions instead.
+It exists because pasting LaTeX-like text into SWP 5.5 produces literal source such as `\frac` and `\rho`. The bridge parses a restricted notation and replays the equivalent SWP 5.5 actions instead of editing the generated `.tex` file behind SWP's back.
 
 ## Status
 
-**v0.1 MVP / experimental live driver.** The parser and dry-run planner are testable anywhere. Live entry requires Windows, SWP 5.5, and a one-time smoke test on the target installation.
+Experimental live driver. Parser and dry-run planning are testable on Python 3.10 and 3.12. Live entry and application commands require Windows, SWP 5.5, and an English-menu installation for the current Compute/Plot/Typeset menu paths.
 
-The project deliberately does **not** save, close, overwrite, or manage SWP files. It only sends input to an already-open SWP document.
+The project still does **not** save, close, overwrite, or rename SWP files. File management remains manual so a failed automation run cannot destroy the working document.
 
 ## Install
 
@@ -29,60 +29,102 @@ pytest
 
 ## First use
 
-Open SWP 5.5 and a disposable blank document, then:
+Open SWP 5.5 and exactly one target document, then:
 
 ```powershell
 swp5-input doctor
-swp5-input plan --expr "\lim_{\rho\to0^+}K_\rho(m_\rho)=0"
-```
-
-If the plan looks correct, test live input in the disposable document:
-
-```powershell
-swp5-input write --expr "\lim_{\rho\to0^+}K_\rho(m_\rho)=0" --yes
+swp5-input plan --expr "\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0"
+swp5-input write --expr "\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0" --yes
 ```
 
 `write` refuses to run without `--yes`.
 
 ## Document input
 
-A `.swpmd` file is plain UTF-8 text. Only `$$ ... $$` is special; it marks a display-math block.
+A `.swpmd` file is plain UTF-8 text. Use `$ ... $` for inline mathematics and `$$ ... $$` for display mathematics.
 
 ```text
-Lemma. Assume that
+Lemma. Assume that $f(0)>0$. Then
 
 $$
-\lim_{\rho\to0^+}K_\rho(m_\rho)=0.
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=0.
 $$
-
-The proof is complete.
 ```
 
-Preview it:
+Preview and write it with:
 
 ```powershell
 swp5-input plan --file examples/basic.swpmd
-```
-
-Then, after placing the cursor in SWP:
-
-```powershell
 swp5-input write --file examples/basic.swpmd --yes
 ```
 
-## Supported math in v0.1
+## SWP application directives
+
+A standalone directive line is not typed into the document. It is converted into a semantic application action. When it immediately follows a math block, whitespace is delayed until after the action so the SWP insertion point is still to the right of the expression when Compute or Plot is invoked.
+
+```text
+$$
+0.860333589\tan(0.860333589)
+$$
+[[swp:compute:evaluate-numerically]]
+
+$$
+x\tan x
+$$
+[[swp:plot:2d]]
+```
+
+Supported directives:
+
+- `[[swp:compute:evaluate]]`
+- `[[swp:compute:evaluate-numerically]]`
+- `[[swp:compute:simplify]]`
+- `[[swp:compute:solve-exact]]`
+- `[[swp:plot:2d]]`
+- `[[swp:plot:3d]]`
+- `[[swp:typeset:compile-pdf]]`
+- `[[swp:typeset:preview-pdf]]`
+
+The same application actions can be invoked directly. For example, after manually saving the current SWP document:
+
+```powershell
+swp5-input command typeset:compile-pdf --yes
+```
+
+MacKichan's SWP 5.5 documentation describes the same UI workflow: place the insertion point to the right of an expression, then use Compute > Evaluate / Evaluate Numerically / Plot 2D / Plot3D. The driver uses `pywinauto` menu selection rather than screen coordinates.
+
+## HW-2 progress report
+
+`examples/hw2-progress-report.swpmd` is a self-contained local bifurcation progress report. It includes the problem and branch formulation, the three-case left-end theorem and proofs, a numerical SWP computation, and a live 2D plot action.
+
+After pulling the latest repository and opening a blank SWP document:
+
+```powershell
+py -m swp5_input.cli plan --file examples/hw2-progress-report.swpmd
+py -m swp5_input.cli write --file examples/hw2-progress-report.swpmd --yes
+```
+
+Save the document manually. To compile it afterwards:
+
+```powershell
+py -m swp5_input.cli command typeset:compile-pdf --yes
+```
+
+## Supported math
 
 - ordinary letters, digits, punctuation, parentheses, relations
+- inline and display mathematics
 - subscripts and superscripts: `_`, `^`
-- common TeX-named Greek symbols: `\rho`, `\lambda`, `\alpha`, ...
+- common TeX-named Greek symbols, including capital Greek letters
 - `\lim`, `\liminf`, `\limsup`, `\infty`, `\to`
 - `\frac{...}{...}`
 - `\sqrt{...}`
 - `\int` with subscript/superscript limits
-- common names such as `\sin`, `\cos`, `\tan`, `\log`, `\exp`
-- `\left` / `\right` delimiters (basic form)
+- common names such as `\sin`, `\cos`, `\tan`, `\sec`, `\log`, `\exp`
+- `\left` / `\right` delimiters in the supported basic forms
+- spacing commands `\quad` and `\qquad`
 
-Unknown commands fail closed with a parser error rather than being typed into SWP.
+Unknown math commands and unknown `[[swp:...]]` directives fail closed instead of being typed into SWP.
 
 ## Safety model
 
@@ -91,15 +133,10 @@ Unknown commands fail closed with a parser error rather than being typed into SW
 - the driver focuses that window before input
 - if SWP loses focus, the driver aborts
 - `plan` never touches SWP
-- `write` requires explicit `--yes`
-- no save/close/file-overwrite automation exists in v0.1
+- `write` and `command` require explicit `--yes`
+- Compute/Plot/Typeset use semantic menu paths, not absolute screen coordinates
+- save/close/file-overwrite automation remains intentionally disabled
 
-## SWP 5.5 keyboard strategy
+## Current limitation
 
-The bridge uses documented v5.5 shortcuts such as `Ctrl+M` for mathematics, `Ctrl+D` for a display, `Ctrl+F` for a fraction, `Ctrl+H` / `Ctrl+L` for super/subscripts, and `Ctrl+I` for an integral. TeX-named symbols are entered by holding `Ctrl` while typing the symbol name.
-
-See [docs/swp55-shortcuts.md](docs/swp55-shortcuts.md) and [docs/windows-smoke-test.md](docs/windows-smoke-test.md).
-
-## Non-goals for v0.1
-
-Matrices, cases, aligned multi-line displays, equation numbering, automatic saving, visual computer-use fallback, and arbitrary LaTeX are intentionally out of scope until the basic SWP 5.5 path is validated on a real installation.
+Plot creation is automated, but Plot Properties such as exact axis range and labels are not yet controlled because SWP 5.5 exposes those settings through a separate Plot Properties dialog. That dialog should be automated only after one control-tree smoke test on the actual Windows installation; the bridge does not guess screen coordinates.

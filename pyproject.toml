@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "swp5-input-bridge"
-version = "0.1.0"
-description = "Keyboard-first automation bridge for entering structured mathematics into Scientific WorkPlace 5.5"
+version = "0.2.0"
+description = "Scientific WorkPlace 5.5 document automation bridge for native math input, computation, plotting, and typesetting"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}

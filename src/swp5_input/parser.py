@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .actions import Action, Kind
+from .actions import Action, Kind, SUPPORTED_SWP_COMMANDS
 
 
 class ParseError(ValueError):
@@ -18,6 +18,9 @@ _SIMPLE_TEX = {
     "cdot", "partial", "sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "exp",
     "lim", "liminf", "limsup", "min", "max", "sup", "inf", "arccos", "arctan",
 }
+
+_DIRECTIVE_PREFIX = "[[swp:"
+_DIRECTIVE_SUFFIX = "]]"
 
 
 @dataclass
@@ -171,23 +174,66 @@ def parse_math(source: str) -> list[Action]:
     return MathParser(source).parse()
 
 
+def parse_swp_command(command: str) -> Action:
+    command = command.strip()
+    if command not in SUPPORTED_SWP_COMMANDS:
+        supported = ", ".join(SUPPORTED_SWP_COMMANDS)
+        raise ParseError(f"Unsupported SWP command {command!r}. Supported commands: {supported}")
+    return Action(Kind.SWP_COMMAND, command)
+
+
+def _next_special(source: str, cursor: int) -> tuple[int, str] | None:
+    math_pos = source.find("$", cursor)
+    directive_pos = source.find(_DIRECTIVE_PREFIX, cursor)
+    candidates = []
+    if math_pos >= 0:
+        candidates.append((math_pos, "math"))
+    if directive_pos >= 0:
+        candidates.append((directive_pos, "directive"))
+    if not candidates:
+        return None
+    return min(candidates, key=lambda item: item[0])
+
+
 def parse_document(source: str) -> list[Action]:
-    """Parse plain text with native SWP inline and display math blocks.
+    """Parse plain text, native SWP math blocks, and semantic SWP directives.
 
     ``$ ... $`` marks inline mathematics and ``$$ ... $$`` marks display
-    mathematics. Markdown is otherwise intentionally not implemented. Text
-    outside math blocks is preserved exactly.
+    mathematics. A directive such as ``[[swp:plot:2d]]`` is not typed into the
+    document; it becomes a semantic application command. If a directive follows
+    a math block separated only by whitespace, that whitespace is replayed after
+    the command so SWP still sees the insertion point immediately to the right
+    of the expression when the Compute/Plot command is invoked.
     """
     out: list[Action] = []
     cursor = 0
+    last_was_math_close = False
+
     while cursor < len(source):
-        start = source.find("$", cursor)
-        if start < 0:
+        special = _next_special(source, cursor)
+        if special is None:
             if cursor < len(source):
                 out.append(Action(Kind.TEXT, source[cursor:]))
             break
-        if start > cursor:
-            out.append(Action(Kind.TEXT, source[cursor:start]))
+
+        start, special_kind = special
+        between = source[cursor:start]
+        defer_whitespace = special_kind == "directive" and last_was_math_close and between != "" and between.strip() == ""
+        if between and not defer_whitespace:
+            out.append(Action(Kind.TEXT, between))
+            last_was_math_close = False
+
+        if special_kind == "directive":
+            end = source.find(_DIRECTIVE_SUFFIX, start + len(_DIRECTIVE_PREFIX))
+            if end < 0:
+                raise ParseError("Unclosed [[swp:...]] directive")
+            command = source[start + len(_DIRECTIVE_PREFIX):end]
+            out.append(parse_swp_command(command))
+            if defer_whitespace:
+                out.append(Action(Kind.TEXT, between))
+            cursor = end + len(_DIRECTIVE_SUFFIX)
+            last_was_math_close = False
+            continue
 
         if source.startswith("$$", start):
             end = source.find("$$", start + 2)
@@ -198,6 +244,7 @@ def parse_document(source: str) -> list[Action]:
             out.extend(parse_math(expr))
             out.append(Action(Kind.DISPLAY_END))
             cursor = end + 2
+            last_was_math_close = True
         else:
             end = source.find("$", start + 1)
             if end < 0:
@@ -207,4 +254,6 @@ def parse_document(source: str) -> list[Action]:
             out.extend(parse_math(expr))
             out.append(Action(Kind.MATH_END))
             cursor = end + 1
+            last_was_math_close = True
+
     return out

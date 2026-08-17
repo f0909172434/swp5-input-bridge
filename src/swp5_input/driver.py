@@ -254,16 +254,21 @@ class SWPDriver:
             if value is not None:
                 numeric.append((edit, value))
 
-        lower = self._nearest_numeric_control(numeric, -5.0)
-        upper = self._nearest_numeric_control(numeric, 5.0, exclude=lower)
-        if lower is None or upper is None:
+        lower_boxes = [control for control, value in numeric if abs(value + 5.0) <= 0.25]
+        upper_boxes = [control for control, value in numeric if abs(value - 5.0) <= 0.25]
+        if not lower_boxes or not upper_boxes:
             raise DriverError(
                 "Plot Intervals opened, but the default rectangular -5 and 5 interval boxes could not be identified. "
                 + self._control_summary(interval_dialog)
             )
 
-        self._set_edit(lower, self._format_number(xmin))
-        self._set_edit(upper, self._format_number(xmax))
+        # Each plotted expression can carry its own interval. Change every
+        # default rectangular pair so a constant comparison curve cannot keep
+        # the plot on SWP's default -5..5 domain.
+        for control in lower_boxes:
+            self._set_edit(control, self._format_number(xmin))
+        for control in upper_boxes:
+            self._set_edit(control, self._format_number(xmax))
         self._click_ok(interval_dialog)
 
         plot_spec.wait("visible", timeout=3)
@@ -279,12 +284,14 @@ class SWPDriver:
                     if exclude_handle is not None and handle == exclude_handle:
                         continue
                     title = window.window_text().lower()
-                    if "plot interval" in title or ("interval" in title and "plot" in title):
+                    is_plot_interval = "plot interval" in title or ("interval" in title and "plot" in title)
+                    is_variables_interval = "interval" in title and "variable" in title
+                    if is_plot_interval or is_variables_interval:
                         return window
                 except Exception:
                     continue
             time.sleep(0.1)
-        raise DriverError("Variables, Intervals, and Automation was opened, but the Plot Intervals dialog was not found")
+        raise DriverError("Variables, Intervals, and Automation was opened, but its interval dialog was not found")
 
     @staticmethod
     def _control_type(control) -> str:
@@ -338,16 +345,6 @@ class SWPDriver:
                 except ValueError:
                     pass
         return None
-
-    @staticmethod
-    def _nearest_numeric_control(numeric, target: float, exclude=None):
-        candidates = [(control, value) for control, value in numeric if control is not exclude]
-        if not candidates:
-            return None
-        control, value = min(candidates, key=lambda item: abs(item[1] - target))
-        if abs(value - target) > 0.25:
-            return None
-        return control
 
     @staticmethod
     def _set_edit(control, value: str) -> None:

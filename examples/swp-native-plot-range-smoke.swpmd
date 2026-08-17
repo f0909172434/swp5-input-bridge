@@ -1,10 +1,10 @@
 Native SWP plot interval smoke test
 
-The expression below must generate a native rectangular plot with the horizontal line y=1 and the x interval restricted to 0<=x<=1.45.
+The expression below must generate a native rectangular plot of the first positive branch of x tan x with the horizontal interval restricted to 0<=x<=1.45.
 
 $$
-x\tan x,1
+x\tan x
 $$
 [[swp:plot:2d-rectangular-range:0:1.45]]
 
-The final plot should display only the first positive branch of x tan x over the chosen interval together with the line y=1.
+The final plot should display only the first positive branch of x tan x over the chosen interval.

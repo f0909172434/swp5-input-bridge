@@ -16,4 +16,6 @@ def test_native_swp_plot_range_smoke_document():
     displays = source.split("$$")[1::2]
     assert displays
     assert all(block.strip()[-1] not in ".,;:" for block in displays)
+    assert "x\\tan x,1" not in source
+    assert "horizontal line y=1" not in source
     assert "K_\\rho" not in source

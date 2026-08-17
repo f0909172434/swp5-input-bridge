@@ -1,0 +1,138 @@
+(4) Assume that $f(0)=f'(0)=0$. We prove that
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=\infty.
+$$
+
+Since $f(0)=f'(0)=0$, L'Hopital's rule gives
+
+$$
+\lim_{u\to0^+}\frac{F(u)}{u^2}=\lim_{u\to0^+}\frac{f(u)}{2u}=0.
+$$
+
+Suppose to the contrary that
+
+$$
+\liminf_{\rho\to0^+}\Lambda_\rho(m_\rho)<\infty.
+$$
+
+Then there exist $M>0$ and a sequence $\rho_n\to0^+$ such that, if
+
+$$
+m_n=m_{\rho_n},\qquad \lambda_n=\Lambda_{\rho_n}(m_{\rho_n}),
+$$
+
+then
+
+$$
+\lambda_n\leq M
+$$
+
+for all $n$. Put
+
+$$
+q_n=\frac{m_n}{\alpha\rho_n}.
+$$
+
+Since $f(s)/s\to0$ as $s\to0^+$, for every $\epsilon>0$ and all sufficiently large $n$,
+
+$$
+0<f(s)\leq\epsilon s
+$$
+
+for $0<s\leq\rho_n$. By the terminal identity,
+
+$$
+\frac{1}{\sqrt{1-m_n^2}}-1=\lambda_n\left[F(\rho_n)-F\left(\frac{m_n}{\alpha}\right)\right].
+$$
+
+Since
+
+$$
+\frac{1}{\sqrt{1-m_n^2}}-1\geq\frac{m_n^2}{2},
+$$
+
+we obtain
+
+$$
+\frac{m_n^2}{2}\leq\frac{M\epsilon}{2}\left(\rho_n^2-\frac{m_n^2}{\alpha^2}\right).
+$$
+
+Hence
+
+$$
+\alpha^2q_n^2\leq M\epsilon(1-q_n^2).
+$$
+
+Choose $\epsilon>0$ so small that
+
+$$
+3M\epsilon<\alpha^2
+$$
+
+and
+
+$$
+\frac{1}{4\sqrt{3M\epsilon/2}}>L.
+$$
+
+Then, for all sufficiently large $n$,
+
+$$
+q_n<\frac12,
+$$
+
+and therefore
+
+$$
+\frac{m_n}{\alpha}<\frac{\rho_n}{2}.
+$$
+
+Since $T_\rho(m,\lambda)$ is strictly decreasing with respect to $\lambda$,
+
+$$
+L=T_{\rho_n}(m_n,\lambda_n)\geq T_{\rho_n}(m_n,M).
+$$
+
+For $\rho_n/2\leq s\leq3\rho_n/4$, let
+
+$$
+\Delta_n(s)=F(\rho_n)-F(s).
+$$
+
+Then
+
+$$
+0<\Delta_n(s)\leq\frac{\epsilon}{2}(\rho_n^2-s^2)\leq\frac{\epsilon\rho_n^2}{2}.
+$$
+
+For all sufficiently large $n$,
+
+$$
+M\Delta_n(s)\leq1,
+$$
+
+and thus
+
+$$
+2+M\Delta_n(s)\leq3.
+$$
+
+Therefore
+
+$$
+T_{\rho_n}(m_n,M)\geq\int_{\rho_n/2}^{3\rho_n/4}\frac{1}{\sqrt{M\Delta_n(s)[2+M\Delta_n(s)]}}ds
+\geq\frac{1}{4\sqrt{3M\epsilon/2}}.
+$$
+
+Consequently,
+
+$$
+L\geq\frac{1}{4\sqrt{3M\epsilon/2}}>L,
+$$
+
+which is a contradiction. Therefore
+
+$$
+\lim_{\rho\to0^+}\Lambda_\rho(m_\rho)=\infty.
+$$

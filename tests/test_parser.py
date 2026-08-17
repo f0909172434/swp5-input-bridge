@@ -41,8 +41,15 @@ def test_fraction_and_integral():
     assert not any(a.value == "," for a in actions)
 
 
+def test_spacing_commands_are_ignored():
+    actions = parse_math(r"\theta_0\qquad\tan\theta_0\quad=\alpha L")
+    assert not any(a.kind == Kind.TEX and a.value in {"quad", "qquad"} for a in actions)
+    assert any(a.kind == Kind.TEX and a.value == "theta" for a in actions)
+    assert any(a.kind == Kind.TEX and a.value == "tan" for a in actions)
+
+
 def test_document_display_blocks():
-    actions = parse_document("Lemma.\n$$\Lambda_\\rho=0$$\nDone.")
+    actions = parse_document("Lemma.\n" + r"$$\Lambda_\rho=0$$" + "\nDone.")
     assert actions[0].kind == Kind.TEXT
     assert any(a.kind == Kind.DISPLAY_START for a in actions)
     assert any(a.kind == Kind.DISPLAY_END for a in actions)

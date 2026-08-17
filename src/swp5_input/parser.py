@@ -114,6 +114,9 @@ class MathParser:
                 return []
             return [Action(Kind.TYPE, literal)]
 
+        if name in {"quad", "qquad"}:
+            return []
+
         if name in {"left", "right"}:
             self._skip_spaces()
             if self.pos >= len(self.source):
